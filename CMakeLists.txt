@@ -37,7 +37,7 @@ install(DIRECTORY include/
   DESTINATION include/
 )
 
-install(DIRECTORY launch DESTINATION share/${PROJECT_NAME})
+install(DIRECTORY launch worlds DESTINATION share/${PROJECT_NAME})
 
 install(TARGETS
   ARCHIVE DESTINATION lib
