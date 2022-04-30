@@ -31,11 +31,11 @@ set(dependencies
     rclcpp_action
 )
 
-include_directories(include)
+# include_directories(include)
 
-install(DIRECTORY include/
-  DESTINATION include/
-)
+# install(DIRECTORY include/
+#   DESTINATION include/
+# )
 
 install(DIRECTORY launch worlds DESTINATION share/${PROJECT_NAME})
 
