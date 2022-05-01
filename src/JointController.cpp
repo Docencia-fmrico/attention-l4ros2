@@ -9,7 +9,7 @@ namespace joint_controller
   JointController::JointController()
   : rclcpp_lifecycle::LifecycleNode("JointController")
   {
-    declare_parameter("speed", 1.0);
+    declare_parameter("speed", 5.0);
     pub_ = create_publisher<trajectory_msgs::msg::JointTrajectory>("/head_controller/joint_trajectory", 100);
     joints_names_.push_back("head_1_joint");
     joints_names_.push_back("head_2_joint");
@@ -65,10 +65,10 @@ namespace joint_controller
     
     std::vector<trajectory_msgs::msg::JointTrajectoryPoint> points_n;
     trajectory_msgs::msg::JointTrajectoryPoint right;
-    right.positions = {1.56,0,};
-    right.velocities = {speed_,0,};
-    right.accelerations = {0.3,0,};
-    right.effort = {1.0,0,};
+    right.positions = {0.3,0};
+    right.velocities = {speed_,0};
+    right.accelerations = {0.3,0};
+    right.effort = {10.0,0};
 
     points_n.push_back(right);
     
@@ -76,11 +76,11 @@ namespace joint_controller
       trajectory_msgs::msg::JointTrajectory msg;
 
       msg.header.stamp = this->now();
-      msg.points.resize(1);
-      msg.joint_names.resize(1);
+      msg.points.resize(2);
+      msg.joint_names.resize(2);
       
-      msg.joint_names[0] = joints_names_[0];
-      msg.points[0] = points_n[0];
+      msg.joint_names = joints_names_;
+      msg.points = points_n;
 
       pub_->publish(msg);
     }
