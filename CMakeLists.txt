@@ -19,23 +19,31 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
+find_package(rclcpp_lifecycle REQUIRED)
+find_package(trajectory_msgs REQUIRED)
 find_package(ament_index_cpp REQUIRED)
-# uncomment the following section in order to fill in
-# further dependencies manually.
-# find_package(<dependency> REQUIRED)
+find_package(std_msgs REQUIRED)
+
 
 set(CMAKE_CXX_STANDARD 17)
 
 set(dependencies
     rclcpp
     rclcpp_action
+    rclcpp_lifecycle
+    trajectory_msgs
+    std_msgs
 )
 
-# include_directories(include)
+include_directories(include)
 
-# install(DIRECTORY include/
-#   DESTINATION include/
-# )
+install(DIRECTORY include/
+  DESTINATION include/
+)
+
+add_library(${PROJECT_NAME} SHARED src/JointController.cpp)
+ament_target_dependencies(${PROJECT_NAME} ${dependencies})
+
 
 install(DIRECTORY launch worlds DESTINATION share/${PROJECT_NAME})
 
