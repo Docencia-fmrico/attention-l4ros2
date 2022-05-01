@@ -44,10 +44,14 @@ install(DIRECTORY include/
 add_library(${PROJECT_NAME} SHARED src/JointController.cpp)
 ament_target_dependencies(${PROJECT_NAME} ${dependencies})
 
+add_executable(neck_controller_node src/neck_controller_node.cpp)
+ament_target_dependencies(neck_controller_node ${dependencies})
+target_link_libraries(neck_controller_node ${PROJECT_NAME})
 
 install(DIRECTORY launch worlds DESTINATION share/${PROJECT_NAME})
 
 install(TARGETS
+  neck_controller_node
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION lib/${PROJECT_NAME}

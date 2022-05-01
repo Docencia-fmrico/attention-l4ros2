@@ -1,3 +1,5 @@
+// Copyright 2022 L4ROS2
+
 #ifndef JOINT_CONTROLLER_HPP_
 #define JOINT_CONTROLLER_HPP_
 
@@ -10,6 +12,8 @@
 #include "rclcpp_lifecycle/lifecycle_node.hpp"
 #include "std_msgs/msg/string.hpp"
 #include "trajectory_msgs/msg/joint_trajectory.hpp"
+#include "trajectory_msgs/msg/joint_trajectory_point.hpp"
+
 namespace joint_controller
 {
 
