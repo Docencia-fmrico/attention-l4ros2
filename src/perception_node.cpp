@@ -3,12 +3,6 @@
 int main(int argc, char **argv)
 {
   rclcpp::init(argc, argv);
-
-  if (argc != 2) {
-      RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "usage: perception_node <object_model_name::body>");
-      return 1;
-  }
-
   
   auto node = std::make_shared<perception::Perception>();
   /*

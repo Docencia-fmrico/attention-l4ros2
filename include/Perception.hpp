@@ -55,13 +55,14 @@ private:
 
 
     std::map<std::string, geometry_msgs::msg::Pose> locations_;
-    geometry_msgs::msg::Pose tiago_base_link_pose_;
 
     rclcpp::Client<gazebo_msgs::srv::GetEntityState>::SharedPtr preception_client_;
     
 
-    rclcpp::Subscription<gazebo_msgs::msg::LinkStates>::SharedPtr pos_sub_;
-    geometry_msgs::msg::Pose current_pos_;
+    rclcpp::Subscription<gazebo_msgs::msg::LinkStates>::SharedPtr states_sub_;
+    std::vector<std::string> link_names_;
+    //geometry_msgs::msg::Pose current_pos_;
+    bool called_back_;
 
 };
 

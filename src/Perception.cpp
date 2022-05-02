@@ -9,10 +9,21 @@ namespace perception {
     preception_client_ = this->create_client<gazebo_msgs::srv::GetEntityState>("perception");
 
     using namespace std::placeholders;
-    pos_sub_ = create_subscription<gazebo_msgs::msg::LinkStates>(
+    states_sub_ = create_subscription<gazebo_msgs::msg::LinkStates>(
       "/gazebo/link_states",
       10,
       std::bind(&Perception::links_callback, this, _1));
+    
+    called_back_ = false;
+    /*
+    gazebo_msgs::msg::LinkStates::SharedPtr msg;
+    states_sub_.return_message(msg); //this does not exist for ROS2.
+
+    for (int i = 0; i < (msg->name).size(); i++) {
+      std::cout << msg->name[i] << " was introduced in the knowledge base." << std::endl;
+    }
+    //*/
+    
   }
 
   using CallbackReturnT = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;
@@ -55,6 +66,7 @@ namespace perception {
 
   void Perception::do_work() 
   { 
+    //link_names_
     RCLCPP_INFO(get_logger(), "DO WORK");
       
     /*
@@ -96,7 +108,15 @@ namespace perception {
 
   void Perception::links_callback(const gazebo_msgs::msg::LinkStates::SharedPtr msg)
   {
-    //tiago_base_link_pose_ = ...; //TO DO: make a subscription that updates this info.
+    if (!called_back_) {
+      for (int i = 0; i < (msg->name).size(); i++) {
+        std::cout << msg->name[i] << " was introduced in the knowledge base." << std::endl;
+      }
+      link_names_ = msg->name;
+      called_back_ = true;
+    }
+
+    /*
     for (int i = 0; i < (msg->name).size(); i++) {
       /*
       if (endsWith(msg->name[i], "::body") &&
@@ -111,12 +131,14 @@ namespace perception {
         //service call /gazebo/get_entity_state gazebo_msgs/srv/GetEntityState
         //'{name: 'PotatoChipChair_3::PotatoChipChair::body', reference_frame: 'tiago'}').
       }
-      //*/
+      link_names_.push_back(msg->name[i]);
       std::cout << msg->name[i] << " was introduced in the knowledge base." << std::endl;
+
     }
     //msg->name;
     //msg->pose;
     //msg->twist;
+    //*/
   }
 
 }   //namespace perception
