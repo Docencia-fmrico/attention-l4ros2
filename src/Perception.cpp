@@ -1,12 +1,12 @@
 #include "Perception.hpp"
 
 
-namespace preception {
+namespace perception {
 
   Perception::Perception() : rclcpp_lifecycle::LifecycleNode("Perception")
   {
     declare_parameter("speed", 5.0);
-    preception_client_ = node->create_client<gazebo_msgs::srv::GetEntityState>("perception");
+    preception_client_ = this->create_client<gazebo_msgs::srv::GetEntityState>("perception");
 
     using namespace std::placeholders;
     pos_sub_ = create_subscription<gazebo_msgs::msg::LinkStates>(
@@ -94,7 +94,7 @@ namespace preception {
 
 
 
-  void links_callback(const gazebo_msgs::msg::LinkStates::SharedPtr msg)
+  void Perception::links_callback(const gazebo_msgs::msg::LinkStates::SharedPtr msg)
   {
     //tiago_base_link_pose_ = ...; //TO DO: make a subscription that updates this info.
     for (int i = 0; i < (msg->name).size(); i++) {
