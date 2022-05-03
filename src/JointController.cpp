@@ -2,6 +2,8 @@
 
 #include "JointController.hpp"
 
+using namespace std::literals::chrono_literals;
+
 namespace joint_controller
 {
 
@@ -92,6 +94,8 @@ namespace joint_controller
       msg.points[0].accelerations[1] = 0.0;
       msg.points[0].effort[0] = 10.0;
       msg.points[0].effort[1] = 0.0;
+      msg.points[0].time_from_start = rclcpp::Duration(1s);
+      
 
       pub_->publish(msg);
     }
