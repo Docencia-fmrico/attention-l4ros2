@@ -13,17 +13,7 @@ namespace perception {
       "/gazebo/link_states",
       10,
       std::bind(&Perception::links_callback, this, _1));
-    
-    called_back_ = false;
-    /*
-    gazebo_msgs::msg::LinkStates::SharedPtr msg;
-    states_sub_.return_message(msg); //this does not exist for ROS2.
 
-    for (int i = 0; i < (msg->name).size(); i++) {
-      std::cout << msg->name[i] << " was introduced in the knowledge base." << std::endl;
-    }
-    //*/
-    
   }
 
   using CallbackReturnT = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;
@@ -32,7 +22,7 @@ namespace perception {
   {
     RCLCPP_INFO(get_logger(), "[%s] Configuring from [%s] state...", get_name(), state.label().c_str());
    
-    speed_ = get_parameter("speed").get_value<double>();
+    radius_ = get_parameter("radius").get_value<double>();
    
     return CallbackReturnT::SUCCESS;
   }
@@ -108,13 +98,14 @@ namespace perception {
 
   void Perception::links_callback(const gazebo_msgs::msg::LinkStates::SharedPtr msg)
   {
-    if (!called_back_) {
-      for (int i = 0; i < (msg->name).size(); i++) {
-        std::cout << msg->name[i] << " was introduced in the knowledge base." << std::endl;
-      }
-      link_names_ = msg->name;
-      called_back_ = true;
+    for (int i = 0; i < (msg->name).size(); i++) {
+      //TO DO: filter with a black list.
+      std::cout << msg->name[i] << " was introduced in the knowledge base." << std::endl;
+      //TO DO: add to the knowledge base every gazebo object name if not in blacklist.
     }
+    link_names_ = msg->name;
+    
+    states_sub_ = NULL; //destroy the subscriber to stop getting messages.
 
     /*
     for (int i = 0; i < (msg->name).size(); i++) {

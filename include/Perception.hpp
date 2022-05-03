@@ -44,15 +44,7 @@ public:
     void do_work();
 
 private:
-    double speed_;
-
-    inline double getDistance(const geometry_msgs::msg::Pose & pos1, const geometry_msgs::msg::Pose & pos2)
-    {
-        return sqrt(
-        (pos1.position.x - pos2.position.x) * (pos1.position.x - pos2.position.x) +
-        (pos1.position.y - pos2.position.y) * (pos1.position.y - pos2.position.y));
-    };
-
+    double radius_;
 
     std::map<std::string, geometry_msgs::msg::Pose> locations_;
 
@@ -62,7 +54,6 @@ private:
     rclcpp::Subscription<gazebo_msgs::msg::LinkStates>::SharedPtr states_sub_;
     std::vector<std::string> link_names_;
     //geometry_msgs::msg::Pose current_pos_;
-    bool called_back_;
 
 };
 
