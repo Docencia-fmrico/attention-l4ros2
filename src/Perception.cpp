@@ -97,10 +97,22 @@ namespace perception {
 
 
   void Perception::links_callback(const gazebo_msgs::msg::LinkStates::SharedPtr msg)
-  {
-    for (int i = 0; i < (msg->name).size(); i++) {
+  { 
+    char long_name[256];
+    for (int i = 0; i < (msg->name).size() ; i++) {
       //TO DO: filter with a black list.
-      std::cout << msg->name[i] << " was introduced in the knowledge base." << std::endl;
+      strcpy (long_name, msg->name[i].c_str());
+      strtok(long_name, ":");
+      std::string name(long_name);
+      
+      if (name.find("Female") != std::string::npos || name.find("Male") != std::string::npos) {
+        name = "Person::"+ name;
+        std::cout << name << " was introduced in the knowledge base." << std::endl;
+      } 
+      
+      //std::cout << long_name << " was introduced in the knowledge base." << std::endl;
+    
+      
       //TO DO: add to the knowledge base every gazebo object name if not in blacklist.
     }
     link_names_ = msg->name;
@@ -109,7 +121,7 @@ namespace perception {
 
     /*
     for (int i = 0; i < (msg->name).size(); i++) {
-      /*
+      
       if (endsWith(msg->name[i], "::body") &&
           getDistance(msg->pose[i], tiago_base_link_pose_) < ATTENTION_RADIUS) {
         std::cout << msg->name[i] << " was introduced in the knowledge base." << std::endl;
