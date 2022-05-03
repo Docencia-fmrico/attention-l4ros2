@@ -65,22 +65,33 @@ namespace joint_controller
     
     std::vector<trajectory_msgs::msg::JointTrajectoryPoint> points_n;
     trajectory_msgs::msg::JointTrajectoryPoint right;
-    right.positions = {0.3,0};
-    right.velocities = {speed_,0};
-    right.accelerations = {0.3,0};
-    right.effort = {10.0,0};
+    
+    //*
+    right.positions = {0.0,0};
+    right.velocities = {0.0,0};
+    right.accelerations = {0.0,0};
+    right.effort = {0.0,0};
+    //*/
 
     points_n.push_back(right);
     
     if (pub_->is_activated()) {
       trajectory_msgs::msg::JointTrajectory msg;
 
-      msg.header.stamp = this->now();
-      msg.points.resize(2);
+      //msg.header.stamp = this->now();
+      msg.points.resize(1);
       msg.joint_names.resize(2);
       
       msg.joint_names = joints_names_;
       msg.points = points_n;
+      msg.points[0].positions[0] = -1.0;
+      msg.points[0].positions[1] = 0.0;
+      msg.points[0].velocities[0] = speed_;
+      msg.points[0].velocities[1] = 0.0;
+      msg.points[0].accelerations[0] = 0.3;
+      msg.points[0].accelerations[1] = 0.0;
+      msg.points[0].effort[0] = 10.0;
+      msg.points[0].effort[1] = 0.0;
 
       pub_->publish(msg);
     }
