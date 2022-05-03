@@ -63,19 +63,21 @@ namespace joint_controller
   
   void JointController::do_work() 
   { 
-    RCLCPP_INFO(get_logger(), "DO WORK");
-    
-    std::vector<trajectory_msgs::msg::JointTrajectoryPoint> points_n;
-    trajectory_msgs::msg::JointTrajectoryPoint right;
-    
-    //*
-    right.positions = {0.0,0};
-    right.velocities = {0.0,0};
-    right.accelerations = {0.0,0};
-    right.effort = {0.0,0};
-    //*/
+    RCLCPP_INFO(get_logger(), "DO WORK");    
+    return;
+  }
 
-    points_n.push_back(right);
+
+  void JointController::move_to_position(double yaw, double pitch){
+    std::vector<trajectory_msgs::msg::JointTrajectoryPoint> points_n;
+    trajectory_msgs::msg::JointTrajectoryPoint goal_position;
+    
+    goal_position.positions = {0.0,0.0};
+    goal_position.velocities = {0.0,0.0};
+    goal_position.accelerations = {0.0,0.0};
+    goal_position.effort = {0.0,0.0};
+
+    points_n.push_back(goal_position);
     
     if (pub_->is_activated()) {
       trajectory_msgs::msg::JointTrajectory msg;
@@ -86,21 +88,19 @@ namespace joint_controller
       
       msg.joint_names = joints_names_;
       msg.points = points_n;
-      msg.points[0].positions[0] = -1.0;
-      msg.points[0].positions[1] = 0.0;
+      msg.points[0].positions[0] = yaw*(PI/180.0);
+      msg.points[0].positions[1] = pitch*(PI/180.0);
       msg.points[0].velocities[0] = speed_;
-      msg.points[0].velocities[1] = 0.0;
+      msg.points[0].velocities[1] = speed_;
       msg.points[0].accelerations[0] = 0.3;
-      msg.points[0].accelerations[1] = 0.0;
-      msg.points[0].effort[0] = 10.0;
-      msg.points[0].effort[1] = 0.0;
+      msg.points[0].accelerations[1] = 0.3;
+      msg.points[0].effort[0] = 5.0;
+      msg.points[0].effort[1] = 5.0;
       msg.points[0].time_from_start = rclcpp::Duration(1s);
       
 
       pub_->publish(msg);
     }
-    
     return;
   }
-
 }  // namespace joint_controller

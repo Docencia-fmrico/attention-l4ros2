@@ -14,6 +14,8 @@
 #include "trajectory_msgs/msg/joint_trajectory.hpp"
 #include "trajectory_msgs/msg/joint_trajectory_point.hpp"
 
+#define PI 3.141592653589793238463
+
 namespace joint_controller
 {
 
@@ -35,6 +37,8 @@ public:
     on_configure(const rclcpp_lifecycle::State & state);
 
     void do_work();
+
+    void move_to_position(double yaw, double pitch);
     
 private:
     double speed_;
