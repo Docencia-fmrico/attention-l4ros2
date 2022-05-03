@@ -6,7 +6,7 @@ namespace perception {
   Perception::Perception() : rclcpp_lifecycle::LifecycleNode("Perception")
   {
     declare_parameter("speed", 5.0);
-    preception_client_ = this->create_client<gazebo_msgs::srv::GetEntityState>("perception");
+    perception_client_ = this->create_client<gazebo_msgs::srv::GetEntityState>("perception");
 
     using namespace std::placeholders;
     states_sub_ = create_subscription<gazebo_msgs::msg::LinkStates>(

@@ -48,7 +48,7 @@ private:
 
     std::map<std::string, geometry_msgs::msg::Pose> locations_;
 
-    rclcpp::Client<gazebo_msgs::srv::GetEntityState>::SharedPtr preception_client_;
+    rclcpp::Client<gazebo_msgs::srv::GetEntityState>::SharedPtr perception_client_;
     
 
     rclcpp::Subscription<gazebo_msgs::msg::LinkStates>::SharedPtr states_sub_;
