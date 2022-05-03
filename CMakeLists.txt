@@ -23,6 +23,7 @@ find_package(rclcpp_lifecycle REQUIRED)
 find_package(ament_index_cpp REQUIRED)
 find_package(gazebo_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(ros2_knowledge_graph REQUIRED)
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
@@ -35,6 +36,7 @@ set(dependencies
     rclcpp_lifecycle
     gazebo_msgs
     geometry_msgs
+    ros2_knowledge_graph
 )
 
 include_directories(include)

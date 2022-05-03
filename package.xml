@@ -18,7 +18,7 @@
   <depend>trajectory_msgs</depend>
   <depend>rclcpp_action</depend>
   <depend>gazebo_msgs</depend>
-
+  <depend>ros2_knowledge_graph</depend>
   <export>
     <build_type>ament_cmake</build_type>
   </export>

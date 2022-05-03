@@ -16,7 +16,7 @@
 #include "rclcpp_lifecycle/lifecycle_node.hpp"
 #include "lifecycle_msgs/msg/state.hpp"
 #include "std_msgs/msg/string.hpp"
-
+#include "ros2_knowledge_graph/GraphNode.hpp"
 
 
 #define ATTENTION_RADIUS 5.0
@@ -53,6 +53,7 @@ private:
 
     rclcpp::Subscription<gazebo_msgs::msg::LinkStates>::SharedPtr states_sub_;
     std::vector<std::string> link_names_;
+    std::shared_ptr<ros2_knowledge_graph::GraphNode> graph_;
     //geometry_msgs::msg::Pose current_pos_;
 
 };

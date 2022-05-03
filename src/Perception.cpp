@@ -4,10 +4,9 @@
 namespace perception {
 
   Perception::Perception() : rclcpp_lifecycle::LifecycleNode("Perception")
-  {
-    declare_parameter("speed", 5.0);
+  { 
+    //graph_ = std::make_shared<ros2_knowledge_graph::GraphNode>("Perception");
     perception_client_ = this->create_client<gazebo_msgs::srv::GetEntityState>("perception");
-
     using namespace std::placeholders;
     states_sub_ = create_subscription<gazebo_msgs::msg::LinkStates>(
       "/gazebo/link_states",
@@ -21,7 +20,7 @@ namespace perception {
   CallbackReturnT Perception::on_configure(const rclcpp_lifecycle::State & state)
   {
     RCLCPP_INFO(get_logger(), "[%s] Configuring from [%s] state...", get_name(), state.label().c_str());
-   
+    
     radius_ = get_parameter("radius").get_value<double>();
    
     return CallbackReturnT::SUCCESS;
@@ -90,10 +89,6 @@ namespace perception {
     
     return;
   }
-
-
-
-
 
 
   void Perception::links_callback(const gazebo_msgs::msg::LinkStates::SharedPtr msg)
