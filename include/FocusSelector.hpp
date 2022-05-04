@@ -36,7 +36,7 @@ public:
     void do_work();
 
 private:
-    //std::shared_ptr<ros2_knowledge_graph::GraphNode> graph_;
+    // std::shared_ptr<ros2_knowledge_graph::GraphNode> graph_;
 
 };
 
