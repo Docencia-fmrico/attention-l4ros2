@@ -158,6 +158,10 @@ namespace perception {
       }
       */
 
+      if (name.find("tiago") != std::string::npos){
+        node_to_add.node_class = "robot";
+      }
+
       //node_to_add.node_name = name;
       RCLCPP_INFO(get_logger(), "node_to_add filled");
 
@@ -175,7 +179,7 @@ namespace perception {
 
       edge_world_obj.content.type = ros2_knowledge_graph_msgs::msg::Content::POSE;
       edge_world_obj.content.pose_value = pose_stamped_msg;
-      
+
       graph_->update_edge(edge_world_obj, true);
 
       std::cout << "node added"<< std::endl;
