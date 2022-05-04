@@ -54,7 +54,7 @@ add_executable(perception_node src/perception_node.cpp)
 ament_target_dependencies(perception_node ${dependencies})
 target_link_libraries(perception_node ${PROJECT_NAME})
 
-install(DIRECTORY launch worlds DESTINATION share/${PROJECT_NAME})
+install(DIRECTORY launch worlds config DESTINATION share/${PROJECT_NAME})
 
 install(TARGETS
   perception_node
