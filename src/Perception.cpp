@@ -1,5 +1,5 @@
 #include "Perception.hpp"
-
+#include "ros2_knowledge_graph/graph_utils.hpp"
 
 namespace perception {
 
@@ -23,7 +23,7 @@ namespace perception {
     
     radius_ = get_parameter("radius").get_value<double>();
     graph_ = std::make_shared<ros2_knowledge_graph::GraphNode>(shared_from_this());
-
+    //graph_ = new ros2_knowledge_graph::GraphNode(shared_from_this());
     return CallbackReturnT::SUCCESS;
   }
 
@@ -100,22 +100,24 @@ namespace perception {
     for (int i = 0; i < (msg->name).size() ; i++) {
       //TO DO: filter with a black list.
       RCLCPP_INFO(get_logger(), "it %d\n", i);
-      strcpy (long_name, msg->name[i].c_str());
-      strtok(long_name, ":");
+      //strcpy (long_name, msg->name[i].c_str());
+      //strtok(long_name, ":");
       std::string name(long_name);
-      
-      ros2_knowledge_graph_msgs::msg::Node node_to_add;
-      node_to_add.node_class = "object";
-
+      RCLCPP_INFO(get_logger(), "name var created");
+      auto node_to_add = ros2_knowledge_graph::new_node(name, "object");
+      //node_to_add.node_class = "object";
+      /*
       if (name.find("Female") != std::string::npos || name.find("Male") != std::string::npos) {
         name = "Person::"+ name;
         std::cout << name << " was introduced in the knowledge base." << std::endl;
         node_to_add.node_class = "person";
       }
+      */
 
-      node_to_add.node_name = name;
+      //node_to_add.node_name = name;
+      RCLCPP_INFO(get_logger(), "node_to_add filled");
       
-      graph_->update_node(node_to_add);
+      graph_->update_node(node_to_add, true);
       std::cout << "node added"<< std::endl;
       //TO DO: add to the knowledge base every gazebo object name if not in blacklist.
     }
