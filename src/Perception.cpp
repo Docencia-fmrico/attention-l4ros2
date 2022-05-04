@@ -1,12 +1,13 @@
 #include "Perception.hpp"
 
+using namespace std::literals::chrono_literals;
 
 namespace perception {
 
   Perception::Perception() : rclcpp_lifecycle::LifecycleNode("Perception")
   { 
     //graph_ = std::make_shared<ros2_knowledge_graph::GraphNode>("Perception");
-    perception_client_ = this->create_client<gazebo_msgs::srv::GetEntityState>("perception");
+    perception_client_ = this->create_client<gazebo_msgs::srv::GetEntityState>("/gazebo/get_entity_state");
     using namespace std::placeholders;
     states_sub_ = create_subscription<gazebo_msgs::msg::LinkStates>(
       "/gazebo/link_states",
@@ -58,27 +59,28 @@ namespace perception {
     //link_names_
     RCLCPP_INFO(get_logger(), "DO WORK");
       
-    /*
-    std::shared_ptr<rclcpp::Node> node = rclcpp::Node::make_shared("perception_client");
+    //*
 
     auto request = std::make_shared<gazebo_msgs::srv::GetEntityState::Request>();
-    request->name = argv[1];
-    request->reference_frame = "tiago";
+    request->name = "tiago";
+    request->reference_frame = "world";
 
-    while (!client->wait_for_service(1s)) {
+    while (!perception_client_->wait_for_service(1s)) {
       if (!rclcpp::ok()) {
         RCLCPP_ERROR(rclcpp::get_logger("rclcpp"), "Interrupted while waiting for the service. Exiting.");
-        return 0;
+        return;
       }
       RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "service not available, waiting again...");
     }
 
-    auto result = client->async_send_request(request);
+    auto result = perception_client_->async_send_request(request);
     // Wait for the result.
-    if (rclcpp::spin_until_future_complete(node, result) ==
+    if (rclcpp::spin_until_future_complete(shared_from_this(), result) ==
       rclcpp::FutureReturnCode::SUCCESS)
     {
-      RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Sum: %ld", result.get()->sum);
+      gazebo_msgs::msg::EntityState entity_state = result.get()->state;
+      RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "tiago x: %f, y: %f", entity_state.pose.position.x, entity_state.pose.position.y);
+
     } else {
       RCLCPP_ERROR(rclcpp::get_logger("rclcpp"), "Failed to call service add_two_ints");
     }
@@ -102,7 +104,8 @@ namespace perception {
       
       if (name.find("Female") != std::string::npos || name.find("Male") != std::string::npos) {
         name = "Person::"+ name;
-        std::cout << name << " was introduced in the knowledge base." << std::endl;
+        std::cout << name << " was introduced in the knowledge base with pose: (" << msg->pose[i].position.x << ", " << msg->pose[i].position.y << ")." << std::endl;
+        
       } 
       
       //std::cout << long_name << " was introduced in the knowledge base." << std::endl;
