@@ -21,8 +21,11 @@ namespace perception {
   {
     RCLCPP_INFO(get_logger(), "[%s] Configuring from [%s] state...", get_name(), state.label().c_str());
     
-    radius_ = get_parameter("radius").get_value<double>();
+    radius_ = ATTENTION_RADIUS; // get_parameter("radius").get_value<double>();
     graph_ = std::make_shared<ros2_knowledge_graph::GraphNode>(shared_from_this());
+    
+    auto world_node = ros2_knowledge_graph::new_node("world", "world_origin");
+    graph_->update_node(world_node);
     //graph_ = new ros2_knowledge_graph::GraphNode(shared_from_this());
     return CallbackReturnT::SUCCESS;
   }
@@ -57,8 +60,38 @@ namespace perception {
   void Perception::do_work() 
   { 
     //link_names_
-    RCLCPP_INFO(get_logger(), "DO WORK");
-      
+    
+    RCLCPP_INFO(get_logger(), "%d nodes", graph_->get_num_nodes());
+
+    std::vector<ros2_knowledge_graph_msgs::msg::Edge> edges_list = graph_->get_edges("world", "tiago::head_2_link", ros2_knowledge_graph_msgs::msg::Content::POSE);
+    
+    if (edges_list.empty()){
+      RCLCPP_INFO(get_logger(), "poses edges from world to tiago is empty");
+    }
+    else{
+      RCLCPP_INFO(get_logger(), "POSES EDGES:");
+      for (auto & e : edges_list){
+
+          RCLCPP_INFO(get_logger(),"source %s | target %s | type %d", e.source_node_id.c_str(), e.target_node_id.c_str(), e.content.type);
+
+
+      }
+    }
+    
+    std::vector<ros2_knowledge_graph_msgs::msg::Edge> error_edges_list = graph_->get_edges("world", "tiago::head_2_link", ros2_knowledge_graph_msgs::msg::Content::ERROR);
+
+    if (error_edges_list.empty()){
+      RCLCPP_INFO(get_logger(), "error edges from world to tiago is empty");
+    }else{
+      RCLCPP_INFO(get_logger(), "ERROR EDGES:");
+      for (auto & e : error_edges_list){
+
+          RCLCPP_INFO(get_logger(),"source %s | target %s | type %d", e.source_node_id.c_str(), e.target_node_id.c_str(), e.content.type);
+
+
+      }
+    }
+    
     /*
     std::shared_ptr<rclcpp::Node> node = rclcpp::Node::make_shared("perception_client");
 
@@ -93,17 +126,28 @@ namespace perception {
 
 
   void Perception::links_callback(const gazebo_msgs::msg::LinkStates::SharedPtr msg)
-  { 
+  {  
+    //RCLCPP_INFO(get_logger(), "links_callback");
+    if(!link_names_.empty()) return;
+
+    if(graph_ == nullptr){
+      RCLCPP_INFO(get_logger(), "graph is null");
+      return;
+    }
+    
+    
+
     char long_name[256];
     RCLCPP_INFO(this->get_logger(), "callback link_state");
 
     for (int i = 0; i < (msg->name).size() ; i++) {
       //TO DO: filter with a black list.
       RCLCPP_INFO(get_logger(), "it %d\n", i);
-      //strcpy (long_name, msg->name[i].c_str());
+      strcpy (long_name, msg->name[i].c_str());
       //strtok(long_name, ":");
       std::string name(long_name);
-      RCLCPP_INFO(get_logger(), "name var created");
+      RCLCPP_INFO(get_logger(), "name %s created", name.c_str());
+
       auto node_to_add = ros2_knowledge_graph::new_node(name, "object");
       //node_to_add.node_class = "object";
       /*
@@ -116,14 +160,30 @@ namespace perception {
 
       //node_to_add.node_name = name;
       RCLCPP_INFO(get_logger(), "node_to_add filled");
+
+      graph_->update_node(node_to_add);
+      geometry_msgs::msg::PoseStamped pose_stamped_msg;
+      pose_stamped_msg.pose = msg->pose[i];
+      pose_stamped_msg.header.frame_id = "world";
+      pose_stamped_msg.header.stamp = get_clock()->now();
+
+      auto edge_content = ros2_knowledge_graph::new_content<geometry_msgs::msg::PoseStamped>(pose_stamped_msg, true);
+
+      RCLCPP_INFO(get_logger(), "type content %d | error type %d", edge_content.type, ros2_knowledge_graph_msgs::msg::Content::ERROR);
+
+      auto edge_world_obj = ros2_knowledge_graph::new_edge("world", node_to_add.node_name, edge_content, true);
+
+      edge_world_obj.content.type = ros2_knowledge_graph_msgs::msg::Content::POSE;
+      edge_world_obj.content.pose_value = pose_stamped_msg;
       
-      graph_->update_node(node_to_add, true);
+      graph_->update_edge(edge_world_obj, true);
+
       std::cout << "node added"<< std::endl;
       //TO DO: add to the knowledge base every gazebo object name if not in blacklist.
     }
     link_names_ = msg->name;
     
-    states_sub_ = NULL; //destroy the subscriber to stop getting messages.
+    //states_sub_ = NULL; //destroy the subscriber to stop getting messages.
 
     /*
     for (int i = 0; i < (msg->name).size(); i++) {
