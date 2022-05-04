@@ -8,6 +8,7 @@ namespace perception {
   { 
     //graph_ = std::make_shared<ros2_knowledge_graph::GraphNode>("Perception");
     perception_client_ = this->create_client<gazebo_msgs::srv::GetEntityState>("/gazebo/get_entity_state");
+    this->declare_parameter("types");
     using namespace std::placeholders;
     states_sub_ = create_subscription<gazebo_msgs::msg::LinkStates>(
       "/gazebo/link_states",
@@ -22,7 +23,7 @@ namespace perception {
   {
     RCLCPP_INFO(get_logger(), "[%s] Configuring from [%s] state...", get_name(), state.label().c_str());
     
-    radius_ = get_parameter("radius").get_value<double>();
+    //radius_ = get_parameter("radius").get_value<double>();
    
     return CallbackReturnT::SUCCESS;
   }
@@ -83,19 +84,24 @@ namespace perception {
   void Perception::links_callback(const gazebo_msgs::msg::LinkStates::SharedPtr msg)
   { 
     char long_name[256];
+    std::vector<std::string> types = this->get_parameter("types").as_string_array();
+
+    for (int j = 0; j < types.size();j++){
+      std::string type_str = types.at(j);
+      declare_parameter(type_str.c_str());
+    }
+
     for (int i = 0; i < (msg->name).size() ; i++) {
       strcpy (long_name, msg->name[i].c_str());
       strtok(long_name, ":");
       std::string name(long_name);
 
-
-      //this->declare_parameter("types"); //put in the constructor
-      //std::vector<std::string> types = this->get_parameter("types").as_string_array();
-      
-      if (name.find("Female") != std::string::npos || name.find("Male") != std::string::npos) {
-        name = "Person::"+ name;
-        std::cout << name << " was introduced in the knowledge base with pose: (" << msg->pose[i].position.x << ", " << msg->pose[i].position.y << ")." << std::endl;
-        
+      for (int n = 0; n < types.size();n++){
+        if (name.find(types.at(n)) != std::string::npos) {
+          name = this->get_parameter(types.at(n).c_str()).as_string() + name;
+          std::cout << name << " was introduced in the knowledge base with pose: (" << msg->pose[i].position.x << ", " << msg->pose[i].position.y << ")." << std::endl;
+          
+        }
       }
       
       //TO DO: add to the knowledge base every gazebo object name if it is in the dictionary.
