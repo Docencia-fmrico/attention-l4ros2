@@ -61,7 +61,7 @@ add_executable(willing_to_see_node src/willing_to_see_node.cpp)
 ament_target_dependencies(willing_to_see_node ${dependencies})
 target_link_libraries(willing_to_see_node lib_willing )
 
-install(DIRECTORY launch worlds DESTINATION share/${PROJECT_NAME})
+install(DIRECTORY launch worlds config DESTINATION share/${PROJECT_NAME})
 
 install(TARGETS
   perception_node
