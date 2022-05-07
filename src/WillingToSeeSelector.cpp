@@ -63,12 +63,19 @@ namespace willing_to_see {
       }
     }
 
-    std::vector<ros2_knowledge_graph_msgs::msg::Edge> world_nodes = graph_->get_edges_from_node_by_data("world", ""); // try to get all the edges
+    std::vector<ros2_knowledge_graph_msgs::msg::Edge> world_nodes, temp_edges;
+    std::map<std::string, ros2_knowledge_graph_msgs::msg::Edge> world_edges_map; // so we can access the Edge given the name
+    //RCLCPP_INFO(get_logger(), "world got %d edges", world_nodes.size());
+    for (auto & node : node_list){
+      temp_edges = graph_->get_edges("world", node.node_name, ros2_knowledge_graph_msgs::msg::Content::POSE);
+      //world_nodes.insert(world_nodes.end(), temp_nodes.begin(), temp_nodes.end() );
 
-    for (auto & edge : world_nodes){
-
-     RCLCPP_INFO(get_logger(), "%s connected to %s by a %s edge", edge.source_node_id.c_str(), edge.target_node_id.c_str(), ros2_knowledge_graph::to_string(edge.content.type));
+      if (temp_edges.size() == 1){ // in this use, we'll only add 1 edges of position
+        world_edges_map[node.node_name] = temp_edges.at(0);
+      }
     }
+
+    RCLCPP_INFO(get_logger(), "Edges connected to world %d", world_edges_map.size()); 
 
 
     return;
