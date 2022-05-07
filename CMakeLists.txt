@@ -47,17 +47,25 @@ install(DIRECTORY include/
   DESTINATION include/
 )
 
-add_library(${PROJECT_NAME} SHARED src/Perception.cpp)
-ament_target_dependencies(${PROJECT_NAME} ${dependencies})
+add_library(lib_percep SHARED src/Perception.cpp ) # src/WillingToSeeSelector.cpp )
+ament_target_dependencies(lib_percep ${dependencies})
+
+add_library(lib_willing SHARED src/WillingToSeeSelector.cpp ) # src/WillingToSeeSelector.cpp )
+ament_target_dependencies(lib_willing ${dependencies})
 
 add_executable(perception_node src/perception_node.cpp)
 ament_target_dependencies(perception_node ${dependencies})
-target_link_libraries(perception_node ${PROJECT_NAME})
+target_link_libraries(perception_node lib_percep)
+
+add_executable(willing_to_see_node src/willing_to_see_node.cpp)
+ament_target_dependencies(willing_to_see_node ${dependencies})
+target_link_libraries(willing_to_see_node lib_willing )
 
 install(DIRECTORY launch worlds DESTINATION share/${PROJECT_NAME})
 
 install(TARGETS
   perception_node
+  willing_to_see_node
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION lib/${PROJECT_NAME}
