@@ -45,24 +45,23 @@ install(DIRECTORY include/
   DESTINATION include/
 )
 
-add_library(${PROJECT_NAME} SHARED
-  src/Attention_nodes.cpp
-)
+add_library(Perception SHARED src/Perception.cpp)
+ament_target_dependencies(Perception ${dependencies})
 
-ament_target_dependencies(${PROJECT_NAME} ${dependencies})
+add_library(FocusSelector SHARED src/FocusSelector.cpp)
+ament_target_dependencies(FocusSelector ${dependencies})
 
 add_executable(perception_node src/perception_node.cpp)
 ament_target_dependencies(perception_node ${dependencies})
-target_link_libraries(perception_node ${PROJECT_NAME})
+target_link_libraries(perception_node Perception)
 
-add_executable(focus_selector_node src/focus_selector_node.cpp)
-ament_target_dependencies(focus_selector_node ${dependencies})
-target_link_libraries(focus_selector_node ${PROJECT_NAME})
+ add_executable(focus_selector_node src/focus_selector_node.cpp)
+ ament_target_dependencies(focus_selector_node ${dependencies})
+ target_link_libraries(focus_selector_node FocusSelector)
 
 install(DIRECTORY launch worlds DESTINATION share/${PROJECT_NAME})
 
 install(TARGETS
-  ${PROJECT_NAME}
   perception_node
   focus_selector_node
   ARCHIVE DESTINATION lib
@@ -77,8 +76,6 @@ if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
 endif()
 
-ament_export_include_directories(include)
-ament_export_libraries(${PROJECT_NAME})
 ament_export_dependencies(${dependencies})
 
 ament_package()

@@ -11,11 +11,8 @@
 #include "rclcpp_lifecycle/lifecycle_node.hpp"
 #include "lifecycle_msgs/msg/state.hpp"
 
+//#include "ros2_knowledge_graph/GraphNode.hpp"
 
-#include "gazebo_msgs/srv/get_entity_state.hpp"
-#include "gazebo_msgs/msg/link_states.hpp"
-#include "geometry_msgs/msg/pose.hpp"
-#include "ros2_knowledge_graph/GraphNode.hpp"
 
 namespace focus_selector {
 
@@ -39,7 +36,7 @@ public:
     void do_work();
 
 private:
-    std::shared_ptr<ros2_knowledge_graph::GraphNode> graph_;
+    // std::shared_ptr<ros2_knowledge_graph::GraphNode> graph_;
 
 };
 
