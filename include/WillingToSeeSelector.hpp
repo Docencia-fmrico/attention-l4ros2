@@ -40,10 +40,13 @@ public:
     void do_work();
 
 private:
+    void addWantToSeeEdge(std::string name1, std::string name2);
+
     double radius_;
 
     std::map<std::string, geometry_msgs::msg::Pose> locations_;
     std::string robot_class_name = "robot";
+    const std::vector<std::string> accepted_types_ = {"Person", "Chair"};
     std::vector<std::string> link_names_;
     std::shared_ptr<ros2_knowledge_graph::GraphNode> graph_;
     //geometry_msgs::msg::Pose current_pos_;

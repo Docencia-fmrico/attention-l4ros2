@@ -48,6 +48,31 @@ namespace willing_to_see {
     return CallbackReturnT::SUCCESS;
   }
 
+double getDistanceBetween(std::string robot_name, std::string object_name, std::map<std::string, ros2_knowledge_graph_msgs::msg::Edge> map){
+
+  geometry_msgs::msg::Pose r_pose = map[robot_name].content.pose_value.pose;
+  geometry_msgs::msg::Pose o_pose = map[object_name].content.pose_value.pose;
+
+  return sqrt(r_pose.position.x * o_pose.position.x + r_pose.position.y * o_pose.position.y + r_pose.position.z * o_pose.position.z);
+
+}
+
+void WillingToSeeSelector::addWantToSeeEdge(std::string name1, std::string name2){
+
+  std::string want_see_id = "want_to_see";
+
+  auto edge_content = ros2_knowledge_graph::new_content<std::string>(want_see_id, true);
+  auto edge_want_to_see = ros2_knowledge_graph::new_edge(name1, name2, edge_content, true);
+
+  edge_want_to_see.content.type = ros2_knowledge_graph_msgs::msg::Content::STRING;
+  edge_want_to_see.content.string_value = want_see_id;
+
+  graph_->update_edge(edge_want_to_see, true);
+
+  RCLCPP_INFO(get_logger(), "Want to see edge between %s and %s added", name1.c_str(), name2.c_str());
+
+}
+
   void WillingToSeeSelector::do_work() 
   { 
     // get all the robots nodes
@@ -80,8 +105,28 @@ namespace willing_to_see {
 
     RCLCPP_INFO(get_logger(), "Edges connected to world %d", world_edges_map.size()); 
 
-    // get the distance between robots and the rest of objects 
+    // get the distance between robots and the rest of interesting objects 
+    double dist;
+    for (auto & node : node_list){
 
+        if(std::find(accepted_types_.begin(), accepted_types_.end(), node.node_class) != accepted_types_.end()){
+
+          // it is an intersesting object
+          // get the distance to all the robots
+
+          for (auto & r_name : robot_names){
+
+            dist  = getDistanceBetween(r_name, node.node_name, world_edges_map);
+
+            if (dist < ATTENTION_RADIUS){
+              addWantToSeeEdge(r_name, node.node_name);
+            }
+          }
+
+        }
+
+
+    }
 
     return;
   }
