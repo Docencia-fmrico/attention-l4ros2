@@ -56,6 +56,8 @@ namespace willing_to_see {
    
     std::vector<std::string> robot_names;
 
+    // get robot names
+
     for (auto & node : node_list){
       if( node.node_class == robot_class_name){
         robot_names.push_back(node.node_name);
@@ -63,6 +65,7 @@ namespace willing_to_see {
       }
     }
 
+    // get edges from world
     std::vector<ros2_knowledge_graph_msgs::msg::Edge> world_nodes, temp_edges;
     std::map<std::string, ros2_knowledge_graph_msgs::msg::Edge> world_edges_map; // so we can access the Edge given the name
     //RCLCPP_INFO(get_logger(), "world got %d edges", world_nodes.size());
@@ -76,6 +79,8 @@ namespace willing_to_see {
     }
 
     RCLCPP_INFO(get_logger(), "Edges connected to world %d", world_edges_map.size()); 
+
+    // get the distance between robots and the rest of objects 
 
 
     return;
