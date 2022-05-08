@@ -10,6 +10,10 @@ To launch the world and spawn tiago:
 
     ros2 launch attention_l4ros2 attention_hospital_launch.py
 
+To launch our attention nodes:
+
+    ros2 launch attention_l4ros2 attentio_launch.py
+
 ## Plugin
 
 To check the coordinates of the models in the world, we will make use of this plugin:
@@ -33,9 +37,13 @@ In this case we are getting the state of the model "BPCart_3" with respect to ti
 
 ## Models to pay attention
 
-We will only be paying attention to these two models:
+Tiago will be paying attention to people, here we can se some of these models:
 
 ![models to pay attention](./imgs/attention_models.png)
+
+## Video demostration:
+
+<TODO>
 
 ## Authors
 
