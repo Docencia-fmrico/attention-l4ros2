@@ -53,7 +53,7 @@ double getDistanceBetween(std::string robot_name, std::string object_name, std::
   geometry_msgs::msg::Pose r_pose = map[robot_name].content.pose_value.pose;
   geometry_msgs::msg::Pose o_pose = map[object_name].content.pose_value.pose;
 
-  return sqrt(r_pose.position.x * o_pose.position.x + r_pose.position.y * o_pose.position.y + r_pose.position.z * o_pose.position.z);
+  return sqrt(pow(r_pose.position.x - o_pose.position.x,2) + pow(r_pose.position.y - o_pose.position.y,2) + pow(r_pose.position.z - o_pose.position.z,2));
 
 }
 
