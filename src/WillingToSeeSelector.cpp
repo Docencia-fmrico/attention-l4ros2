@@ -107,6 +107,7 @@ void WillingToSeeSelector::addWantToSeeEdge(std::string name1, std::string name2
 
     // get the distance between robots and the rest of interesting objects 
     double dist;
+    std::string want_see_id = "want_to_see";
     for (auto & node : node_list){
 
         if(std::find(accepted_types_.begin(), accepted_types_.end(), node.node_class) != accepted_types_.end()){
@@ -115,11 +116,16 @@ void WillingToSeeSelector::addWantToSeeEdge(std::string name1, std::string name2
           // get the distance to all the robots
 
           for (auto & r_name : robot_names){
-
+            temp_edges = graph_-> get_edges(r_name, node.node_name, ros2_knowledge_graph_msgs::msg::Content::STRING);
             dist  = getDistanceBetween(r_name, node.node_name, world_edges_map);
 
             if (dist < ATTENTION_RADIUS){
               addWantToSeeEdge(r_name, node.node_name);
+            }else if(temp_edges.size() == 1){
+              if(temp_edges.at(0).content.string_value == want_see_id){
+                graph_->remove_edge(temp_edges.at(0),true);
+              }
+              
             }
           }
 
