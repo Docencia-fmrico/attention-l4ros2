@@ -19,7 +19,6 @@
 #include "ros2_knowledge_graph/GraphNode.hpp"
 
 
-#define ATTENTION_RADIUS 5.0
 
 namespace perception {
 
@@ -44,8 +43,6 @@ public:
     void do_work();
 
 private:
-    double radius_;
-
     std::map<std::string, geometry_msgs::msg::Pose> locations_;
 
     rclcpp::Client<gazebo_msgs::srv::GetEntityState>::SharedPtr perception_client_;

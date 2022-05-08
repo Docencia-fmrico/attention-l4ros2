@@ -1,5 +1,7 @@
 #include "Perception.hpp"
 #include "ros2_knowledge_graph/graph_utils.hpp"
+
+
 using namespace std::literals::chrono_literals;
 
 
@@ -22,7 +24,6 @@ namespace perception {
   CallbackReturnT Perception::on_configure(const rclcpp_lifecycle::State & state)
   {
     RCLCPP_INFO(get_logger(), "[%s] Configuring from [%s] state...", get_name(), state.label().c_str());
-    radius_ = ATTENTION_RADIUS; // get_parameter("radius").get_value<double>();
     graph_ = std::make_shared<ros2_knowledge_graph::GraphNode>(shared_from_this());
 
 
@@ -96,7 +97,7 @@ namespace perception {
       graph_->update_edge(edge_world_obj, true);
 
     } else {
-      RCLCPP_ERROR(rclcpp::get_logger("rclcpp"), "Failed to call service add_two_ints");
+      RCLCPP_ERROR(rclcpp::get_logger("rclcpp"), "Failed to call service /gazebo/get_entity_state");
     }
 
     return;
