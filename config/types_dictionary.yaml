@@ -1,0 +1,42 @@
+perception_node:
+  ros__parameters:
+
+    types: ["Patient", "Chair", "nursesstation", "curtain",
+    "Scrubs", "Trolley", "Visitor", "Table", "Bed", "residential", "MopCart",
+    "Drawer", "Cabinet", "Machine", "Shower", "Rack", "Sink", "Toilet",
+    "Stand", "Monitor", "CGMClassic", "warehouse"]
+    
+    Chair: "Chair"
+    nursesstation: "Table"
+    curtain: "Curtain"
+
+    Patient: "Person"
+    Scrubs: "Person"
+    Visitor: "Person"
+
+    Bed: "Bed"
+    Trolley: "Bed"
+    CGMClassic: "Bed"
+    
+    MopCart: "MopCart"
+
+    Rack: "Furniture"
+    Table: "Furniture"
+    residential: "Furniture"
+    Drawer: "Furniture"
+    Cabinet: "Furniture"
+    Sink: "Furniture"
+    Toilet: "Furniture"
+
+    Machine: "Machine"
+    Monitor: "Machine"
+
+    Shower: "Shower"
+    Stand: "Stand"
+    warehouse: "Box"
+
+
+
+
+
+
