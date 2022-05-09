@@ -40,10 +40,10 @@ namespace focus_selector {
   CallbackReturnT FocusSelector::on_activate(const rclcpp_lifecycle::State & state)
   {
     RCLCPP_INFO(get_logger(), "[%s] Activating from [%s] state...", get_name(), state.label().c_str());
-
+    /*
     graph_->update_node(new_node("world", "World"));
 
-
+    
     auto tmp_node = new_node("object_1", "Object");
     //add_property(tmp_node, "ros_time", shared_from_this()->now().seconds());
     //add_property(tmp_node, "available", true);
@@ -76,7 +76,7 @@ namespace focus_selector {
     graph_->update_node(tmp_node);
     graph_->update_edge(new_edge<std::string>("robot_2", "object_3", "want_to_see"));
     graph_->update_edge(new_edge<std::string>("robot_2", "object_4", "want_to_see"));
-    
+    */
     return CallbackReturnT::SUCCESS;
   }
 
@@ -126,8 +126,10 @@ namespace focus_selector {
 
   void FocusSelector::do_work() 
   { 
+    std::shared_ptr<ros2_knowledge_graph::GraphNode> graph_aux; //this is made to update the knowledge graph.
+    graph_aux = std::make_shared<ros2_knowledge_graph::GraphNode>(shared_from_this());
     /* Getting all robot nodes. */
-    const nodes_vector robots = get_nodes_by_class("Robot");
+    const nodes_vector robots = get_nodes_by_class("robot");
 
     /* Collecting all objects that need to be watched. */
     std::map<std::string, ros2_knowledge_graph_msgs::msg::Node> nodes_map;
@@ -137,7 +139,7 @@ namespace focus_selector {
         nodes_map[edge.target_node_id] = graph_->get_node(edge.target_node_id).value();
       }
     }
-
+    
     /* Extract target_nodes from nodes_map. */
     std::vector<ros2_knowledge_graph_msgs::msg::Node> all_targets_nodes;
     for(auto pair : nodes_map) {
@@ -244,7 +246,7 @@ namespace focus_selector {
 
   void FocusSelector::fake_watching_updater() {
     /* Getting all robot nodes. */
-    const nodes_vector robots = get_nodes_by_class("Robot");
+    const nodes_vector robots = get_nodes_by_class("robot");
 
     for (auto robot : robots) {
       auto target_edge = graph_->get_edges_from_node_by_data(robot.node_name, "target");

@@ -11,7 +11,7 @@ int main(int argc, char **argv)
   node->trigger_transition(lifecycle_msgs::msg::Transition::TRANSITION_CONFIGURE);
   node->trigger_transition(lifecycle_msgs::msg::Transition::TRANSITION_ACTIVATE);
 
-  rclcpp::Rate rate(10);
+  rclcpp::Rate rate(50);
   while (rclcpp::ok()) {
     node->do_work();
     rclcpp::spin_some(node->get_node_base_interface());
