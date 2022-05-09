@@ -47,11 +47,14 @@ install(DIRECTORY include/
   DESTINATION include/
 )
 
-add_library(lib_percep SHARED src/Perception.cpp ) # src/WillingToSeeSelector.cpp )
+add_library(lib_percep SHARED src/Perception.cpp ) # src/Perception.cpp )
 ament_target_dependencies(lib_percep ${dependencies})
 
 add_library(lib_willing SHARED src/WillingToSeeSelector.cpp ) # src/WillingToSeeSelector.cpp )
 ament_target_dependencies(lib_willing ${dependencies})
+
+add_library(lib_focus_selector SHARED src/FocusSelector.cpp ) # src/FocusSelector.cpp )
+ament_target_dependencies(lib_focus_selector ${dependencies})
 
 add_executable(perception_node src/perception_node.cpp)
 ament_target_dependencies(perception_node ${dependencies})
@@ -61,11 +64,16 @@ add_executable(willing_to_see_node src/willing_to_see_node.cpp)
 ament_target_dependencies(willing_to_see_node ${dependencies})
 target_link_libraries(willing_to_see_node lib_willing )
 
+add_executable(focus_selector_node src/focus_selector_node.cpp)
+ament_target_dependencies(focus_selector_node ${dependencies})
+target_link_libraries(focus_selector_node lib_focus_selector)
+
 install(DIRECTORY launch worlds config DESTINATION share/${PROJECT_NAME})
 
 install(TARGETS
   perception_node
   willing_to_see_node
+  focus_selector_node
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION lib/${PROJECT_NAME}
