@@ -40,6 +40,7 @@ set(dependencies
     rclcpp_action
     rclcpp_lifecycle
     trajectory_msgs
+    tf2_geometry_msgs
     std_msgs
     gazebo_msgs
     geometry_msgs
@@ -58,6 +59,7 @@ ament_target_dependencies(lib_joint ${dependencies})
 add_executable(neck_controller_node src/neck_controller_node.cpp)
 ament_target_dependencies(neck_controller_node ${dependencies})
 target_link_libraries(neck_controller_node lib_joint)
+
 add_library(lib_percep SHARED src/Perception.cpp ) # src/WillingToSeeSelector.cpp )
 ament_target_dependencies(lib_percep ${dependencies})
 

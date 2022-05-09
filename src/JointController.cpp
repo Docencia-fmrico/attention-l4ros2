@@ -74,21 +74,32 @@ double getAngle(double y, double x){
     ang = atan(y/x);
   }
 
-  if (x < 0){
-    if(y < 0){
-      ang += -M_PI; 
-    }
-    if(y > 0){
-      ang += M_PI;
-    }
-  }
+  // if (x < 0){
+  //   if(y < 0){
+  //     ang += -M_PI; 
+  //   }
+  //   if(y > 0){
+  //     ang += M_PI;
+  //   }
+  // }
   return ang;
 }
 
-void getAngleBetween(geometry_msgs::msg::Pose & r_pos, geometry_msgs::msg::Pose & o_pos, double & yaw, double & pitch){
+void getAngleBetween(rclcpp_lifecycle::LifecycleNode * node, geometry_msgs::msg::Pose & r_pos, geometry_msgs::msg::Pose & o_pos, double & yaw, double & pitch){
 
   r_pos.position.z = 1.0;
   
+  tf2::Quaternion q(
+        r_pos.orientation.x,
+        r_pos.orientation.y,
+        r_pos.orientation.z,
+        r_pos.orientation.w);
+  tf2::Matrix3x3 m(q);
+  double roll_r, pitch_r, yaw_r;
+  m.getRPY(roll_r, pitch_r, yaw_r);
+
+  RCLCPP_INFO (node->get_logger(), "Angles of the robot r: %.2f p: %.2f y: %.2f", roll_r, pitch_r, yaw_r);
+
   geometry_msgs::msg::Pose diff;
   diff.position.x = o_pos.position.x - r_pos.position.x;
   diff.position.y = o_pos.position.x - r_pos.position.y;
@@ -99,12 +110,12 @@ void getAngleBetween(geometry_msgs::msg::Pose & r_pos, geometry_msgs::msg::Pose 
   double ang_1 = getAngle(diff.position.y, diff.position.x);
   double ang_2 = getAngle(r_pos.position.y, r_pos.position.x);
 
-  yaw =  ang_2 - ang_1;
+  yaw =  ang_1 - ang_2 - yaw_r - M_PI/2.0;
 
   double ang_3 = getAngle(diff.position.z, diff.position.x);
   double ang_4 = getAngle(r_pos.position.z, r_pos.position.x);
 
-  pitch = ang_4 - ang_3;
+  pitch = ang_3 - ang_4 - pitch_r;
 }
   
   void JointController::do_work() 
@@ -173,11 +184,12 @@ void getAngleBetween(geometry_msgs::msg::Pose & r_pos, geometry_msgs::msg::Pose 
     }
     double yaw, pitch;
 
-    getAngleBetween(r_pos, o_pos, yaw, pitch);
+    getAngleBetween(this, r_pos, o_pos, yaw, pitch);
 
-    if ( yaw < M_PI/2 && yaw > M_PI/2 && pitch < M_PI/2 && pitch > M_PI/2)
+
+    if ( yaw < M_PI/2 && yaw > -M_PI/2 && pitch < M_PI/2 && pitch > -M_PI/2)
     {
-      move_to_position(yaw, pitch);
+      move_to_position(yaw, -pitch);
     }else{
       RCLCPP_INFO(get_logger(), "Object out of sight, yaw: %.2f  pitch: %.2f", yaw, pitch);
     }
