@@ -74,14 +74,14 @@ double getAngle(double y, double x){
     ang = atan(y/x);
   }
 
-  // if (x < 0){
-  //   if(y < 0){
-  //     ang += -M_PI; 
-  //   }
-  //   if(y > 0){
-  //     ang += M_PI;
-  //   }
-  // }
+  if (x < 0){
+    if(y < 0){
+      ang += -M_PI; 
+    }
+    if(y > 0){
+      ang += M_PI;
+    }
+  }
   return ang;
 }
 
@@ -102,20 +102,20 @@ void getAngleBetween(rclcpp_lifecycle::LifecycleNode * node, geometry_msgs::msg:
 
   geometry_msgs::msg::Pose diff;
   diff.position.x = o_pos.position.x - r_pos.position.x;
-  diff.position.y = o_pos.position.x - r_pos.position.y;
-  diff.position.z = o_pos.position.x - r_pos.position.z;
+  diff.position.y = o_pos.position.y - r_pos.position.y;
+  diff.position.z = o_pos.position.z - r_pos.position.z;
 
   // calc the arctan in XY -> yaw, and the arctan in XZ
 
   double ang_1 = getAngle(diff.position.y, diff.position.x);
   double ang_2 = getAngle(r_pos.position.y, r_pos.position.x);
 
-  yaw =  ang_1 - ang_2 - yaw_r - M_PI/2.0;
+  yaw =  ang_1 - ang_2 - yaw_r + M_PI/2.0;
 
   double ang_3 = getAngle(diff.position.z, diff.position.x);
   double ang_4 = getAngle(r_pos.position.z, r_pos.position.x);
 
-  pitch = ang_3 - ang_4 - pitch_r;
+  pitch = ang_3 - ang_4 - pitch_r + M_PI;
 }
   
   void JointController::do_work() 
@@ -189,7 +189,7 @@ void getAngleBetween(rclcpp_lifecycle::LifecycleNode * node, geometry_msgs::msg:
 
     if ( yaw < M_PI/2 && yaw > -M_PI/2 && pitch < M_PI/2 && pitch > -M_PI/2)
     {
-      move_to_position(yaw, -pitch);
+      move_to_position(yaw, pitch);
     }else{
       RCLCPP_INFO(get_logger(), "Object out of sight, yaw: %.2f  pitch: %.2f", yaw, pitch);
     }
