@@ -1,6 +1,8 @@
 // Copyright 2022 L4ROS2
 
 #include "JointController.hpp"
+#include "ros2_knowledge_graph/graph_utils.hpp"
+
 
 using namespace std::literals::chrono_literals;
 
@@ -158,8 +160,11 @@ void getAngleBetween(rclcpp_lifecycle::LifecycleNode * node, geometry_msgs::msg:
       //   //RCLCPP_INFO(get_logger(), "%s", t.content.string_value.c_str());  
       // }
 
-      if (temp_edges.size() == 1 && temp_edges.at(0).content.string_value == "target"){
-        object_name = n.node_name;
+      if (temp_edges.size() >= 1){
+        for (auto & e : temp_edges){
+          if (e.content.string_value == "target")
+            object_name = n.node_name;
+        }
       }
       
     }
@@ -190,9 +195,23 @@ void getAngleBetween(rclcpp_lifecycle::LifecycleNode * node, geometry_msgs::msg:
     if ( yaw < M_PI/2 && yaw > -M_PI/2 && pitch < M_PI/2 && pitch > -M_PI/2)
     {
       move_to_position(yaw, pitch);
+
+
+      // this should be done in another node, to check i the object is seen by the robot
+      auto edge_content = ros2_knowledge_graph::new_content<std::string>("watching", true);
+      auto edge_watching = ros2_knowledge_graph::new_edge(robot_name_, object_name, edge_content, true);
+
+      edge_watching.content.type = ros2_knowledge_graph_msgs::msg::Content::STRING;
+      edge_watching.content.string_value = "watching";
+
+      graph_->update_edge(edge_watching, true);
+
+      
     }else{
       RCLCPP_INFO(get_logger(), "Object out of sight, yaw: %.2f  pitch: %.2f", yaw, pitch);
     }
+
+
     return;
   }
 
