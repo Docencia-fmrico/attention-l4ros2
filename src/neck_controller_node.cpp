@@ -5,9 +5,6 @@
 int main(int argc, char * argv[])
 {
   rclcpp::init(argc, argv);
-  if (argc != 3) return -1;
-  double yaw = atof(argv[1]);
-  double pitch = atof(argv[2]);
 
   auto node = std::make_shared<joint_controller::JointController>();
   node->trigger_transition(lifecycle_msgs::msg::Transition::TRANSITION_CONFIGURE);
@@ -16,7 +13,7 @@ int main(int argc, char * argv[])
   rclcpp::Rate rate(5);
   
   while (rclcpp::ok()) {
-    node->move_to_position(yaw,pitch);
+    node->do_work();
 
     rclcpp::spin_some(node->get_node_base_interface());
     rate.sleep();

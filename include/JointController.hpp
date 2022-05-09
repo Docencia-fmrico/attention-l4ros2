@@ -13,6 +13,8 @@
 #include "std_msgs/msg/string.hpp"
 #include "trajectory_msgs/msg/joint_trajectory.hpp"
 #include "trajectory_msgs/msg/joint_trajectory_point.hpp"
+#include "geometry_msgs/msg/pose.hpp"
+#include "ros2_knowledge_graph/GraphNode.hpp"
 
 #define PI 3.141592653589793238463
 
@@ -42,7 +44,9 @@ public:
     
 private:
     double speed_;
+    std::string  robot_name_;
     std::vector<std::string> joints_names_;
+    std::shared_ptr<ros2_knowledge_graph::GraphNode> graph_;
     rclcpp_lifecycle::LifecyclePublisher<trajectory_msgs::msg::JointTrajectory>::SharedPtr pub_;
 };
 
