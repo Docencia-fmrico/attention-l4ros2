@@ -15,6 +15,7 @@
 #include "trajectory_msgs/msg/joint_trajectory_point.hpp"
 #include "geometry_msgs/msg/pose.hpp"
 #include "ros2_knowledge_graph/GraphNode.hpp"
+#include <math.h>
 
 #define PI 3.141592653589793238463
 

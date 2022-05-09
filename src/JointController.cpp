@@ -1,7 +1,7 @@
 // Copyright 2022 L4ROS2
 
 #include "JointController.hpp"
-#include <math.h>
+
 using namespace std::literals::chrono_literals;
 
 namespace joint_controller
@@ -87,7 +87,7 @@ double getAngle(double y, double x){
 
 void getAngleBetween(geometry_msgs::msg::Pose & r_pos, geometry_msgs::msg::Pose & o_pos, double & yaw, double & pitch){
 
-  r_pos.position.z = 1;
+  r_pos.position.z = 1.0;
   
   geometry_msgs::msg::Pose diff;
   diff.position.x = o_pos.position.x - r_pos.position.x;
@@ -97,14 +97,14 @@ void getAngleBetween(geometry_msgs::msg::Pose & r_pos, geometry_msgs::msg::Pose 
   // calc the arctan in XY -> yaw, and the arctan in XZ
 
   double ang_1 = getAngle(diff.position.y, diff.position.x);
-  double ang_2 = getAngle(o_pos.position.y, o_pos.position.x);
+  double ang_2 = getAngle(r_pos.position.y, r_pos.position.x);
 
-  yaw =  ang_1 - ang_2;
+  yaw =  ang_2 - ang_1;
 
   double ang_3 = getAngle(diff.position.z, diff.position.x);
-  double ang_4 = getAngle(o_pos.position.z, o_pos.position.x);
+  double ang_4 = getAngle(r_pos.position.z, r_pos.position.x);
 
-  pitch = ang_3 - ang_4;
+  pitch = ang_4 - ang_3;
 }
   
   void JointController::do_work() 
@@ -115,7 +115,6 @@ void getAngleBetween(geometry_msgs::msg::Pose & r_pos, geometry_msgs::msg::Pose 
 
     RCLCPP_INFO(get_logger(), "before getting nodes");
 
-    std::vector<ros2_knowledge_graph_msgs::msg::Node> node_list = graph_->get_nodes();
    
     std::map<std::string, ros2_knowledge_graph_msgs::msg::Edge> r_positions_edges;
     std::vector<std::string> r_names;
@@ -140,17 +139,24 @@ void getAngleBetween(geometry_msgs::msg::Pose & r_pos, geometry_msgs::msg::Pose 
     std::vector<ros2_knowledge_graph_msgs::msg::Edge> temp_edges;
     std::string object_name;
 
+    std::vector<ros2_knowledge_graph_msgs::msg::Node> node_list = graph_->get_nodes();
     for (auto & n : node_list){
       temp_edges = graph_->get_edges(robot_name_, n.node_name, ros2_knowledge_graph_msgs::msg::Content::STRING);
+      //RCLCPP_INFO(get_logger(), "Edges between %s - %s: ", robot_name_.c_str(), n.node_name.c_str());
+      // for (auto & t : temp_edges){
+      //   //RCLCPP_INFO(get_logger(), "%s", t.content.string_value.c_str());  
+      // }
 
       if (temp_edges.size() == 1 && temp_edges.at(0).content.string_value == "target"){
         object_name = n.node_name;
       }
-      else{
+      
+    }
+
+    if (object_name.empty()){
         RCLCPP_ERROR(get_logger(),"Couldn't get a reliable name for target");
         return;
       }
-    }
 
 
     RCLCPP_INFO (get_logger(), "Robot %s targets %s", robot_name_.c_str(), object_name.c_str());
@@ -169,12 +175,18 @@ void getAngleBetween(geometry_msgs::msg::Pose & r_pos, geometry_msgs::msg::Pose 
 
     getAngleBetween(r_pos, o_pos, yaw, pitch);
 
-    move_to_position(yaw, pitch);
+    if ( yaw < M_PI/2 && yaw > M_PI/2 && pitch < M_PI/2 && pitch > M_PI/2)
+    {
+      move_to_position(yaw, pitch);
+    }else{
+      RCLCPP_INFO(get_logger(), "Object out of sight, yaw: %.2f  pitch: %.2f", yaw, pitch);
+    }
     return;
   }
 
 
   void JointController::move_to_position(double yaw, double pitch){
+    RCLCPP_INFO(get_logger(), "moving to yaw: %.2f  pitch: %.2f", yaw, pitch);
     std::vector<trajectory_msgs::msg::JointTrajectoryPoint> points_n;
     trajectory_msgs::msg::JointTrajectoryPoint goal_position;
     
@@ -194,8 +206,8 @@ void getAngleBetween(geometry_msgs::msg::Pose & r_pos, geometry_msgs::msg::Pose 
       
       msg.joint_names = joints_names_;
       msg.points = points_n;
-      msg.points[0].positions[0] = yaw*(PI/180.0);
-      msg.points[0].positions[1] = pitch*(PI/180.0);
+      msg.points[0].positions[0] = yaw;
+      msg.points[0].positions[1] = pitch;
       msg.points[0].velocities[0] = speed_;
       msg.points[0].velocities[1] = speed_;
       msg.points[0].accelerations[0] = 0.3;

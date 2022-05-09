@@ -14,7 +14,7 @@ int main(int argc, char * argv[])
   
   while (rclcpp::ok()) {
     node->do_work();
-
+    //node->move_to_position(0, 0);
     rclcpp::spin_some(node->get_node_base_interface());
     rate.sleep();
   }
