@@ -15,15 +15,27 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
+set(CMAKE_BUILD_TYPE Debug)
+
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(rclcpp_lifecycle REQUIRED)
+<<<<<<< HEAD
 find_package(trajectory_msgs REQUIRED)
 find_package(ament_index_cpp REQUIRED)
 find_package(std_msgs REQUIRED)
 
+=======
+find_package(ament_index_cpp REQUIRED)
+find_package(gazebo_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(ros2_knowledge_graph REQUIRED)
+# uncomment the following section in order to fill in
+# further dependencies manually.
+# find_package(<dependency> REQUIRED)
+>>>>>>> main
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -33,6 +45,9 @@ set(dependencies
     rclcpp_lifecycle
     trajectory_msgs
     std_msgs
+    gazebo_msgs
+    geometry_msgs
+    ros2_knowledge_graph
 )
 
 include_directories(include)
@@ -41,17 +56,32 @@ install(DIRECTORY include/
   DESTINATION include/
 )
 
-add_library(${PROJECT_NAME} SHARED src/JointController.cpp)
-ament_target_dependencies(${PROJECT_NAME} ${dependencies})
+add_library(lib_joint SHARED src/JointController.cpp)
+ament_target_dependencies(lib_joint ${dependencies})
 
 add_executable(neck_controller_node src/neck_controller_node.cpp)
 ament_target_dependencies(neck_controller_node ${dependencies})
-target_link_libraries(neck_controller_node ${PROJECT_NAME})
+target_link_libraries(neck_controller_node lib_joint)
+add_library(lib_percep SHARED src/Perception.cpp ) # src/WillingToSeeSelector.cpp )
+ament_target_dependencies(lib_percep ${dependencies})
 
-install(DIRECTORY launch worlds DESTINATION share/${PROJECT_NAME})
+add_library(lib_willing SHARED src/WillingToSeeSelector.cpp ) # src/WillingToSeeSelector.cpp )
+ament_target_dependencies(lib_willing ${dependencies})
+
+add_executable(perception_node src/perception_node.cpp)
+ament_target_dependencies(perception_node ${dependencies})
+target_link_libraries(perception_node lib_percep)
+
+add_executable(willing_to_see_node src/willing_to_see_node.cpp)
+ament_target_dependencies(willing_to_see_node ${dependencies})
+target_link_libraries(willing_to_see_node lib_willing )
+
+install(DIRECTORY launch worlds config DESTINATION share/${PROJECT_NAME})
 
 install(TARGETS
   neck_controller_node
+  perception_node
+  willing_to_see_node
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION lib/${PROJECT_NAME}
