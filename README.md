@@ -2,7 +2,7 @@
 
 ## Description
 
-In this task, the robot will focus its attention to the specified models of the [aws hospital world](https://github.com/aws-robotics/aws-robomaker-hospital-world#readme) in perimeter of 1 meter.
+In this task, the robot will pay attention to the [specified models](#models-to-pay-attention) of the [aws hospital world](https://github.com/aws-robotics/aws-robomaker-hospital-world#readme) in a perimeter of 5 meters.
 In order to do it, a knowledge base will be used, specifically the [ros2_knowledge_graph](https://github.com/fmrico/ros2_knowledge_graph).
 
 ## How to run
@@ -36,11 +36,11 @@ We can check that the plugin is correctly working by executing this command that
 
 In this case we are getting the state of the model "BPCart_3" with respect to tiago.
 
-## Models to pay attention
+## Models to pay attention to
 
-Tiago will be paying attention to people, here we can se some of these models:
+Tiago will be paying attention to people and chairs, here we can se some of these models:
 
-![models to pay attention](./imgs/attention_models.png)
+![models to pay attention to](./imgs/attention_models.png)
 
 ## Using the knowledge graph
 
