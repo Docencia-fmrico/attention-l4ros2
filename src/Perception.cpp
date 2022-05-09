@@ -94,7 +94,7 @@ namespace perception {
       edge_world_obj.content.type = ros2_knowledge_graph_msgs::msg::Content::POSE;
       edge_world_obj.content.pose_value = pose_stamped_msg;
 
-      graph_->update_edge(edge_world_obj, true);
+      graph_->update_edge(edge_world_obj,true);
 
     } else {
       RCLCPP_ERROR(rclcpp::get_logger("rclcpp"), "Failed to call service /gazebo/get_entity_state");
@@ -131,20 +131,20 @@ namespace perception {
         if (name.find(types.at(k)) != std::string::npos){
 
           auto node_to_add = ros2_knowledge_graph::new_node(name, this->get_parameter(types.at(k).c_str()).as_string());
-          graph_->update_node(node_to_add);
+          graph_->update_node(node_to_add,false);
 
           geometry_msgs::msg::PoseStamped pose_stamped_msg;
           pose_stamped_msg.pose = msg->pose[i];
           pose_stamped_msg.header.frame_id = "world";
           pose_stamped_msg.header.stamp = get_clock()->now();
 
-          auto edge_content = ros2_knowledge_graph::new_content<geometry_msgs::msg::PoseStamped>(pose_stamped_msg, true);
-          auto edge_world_obj = ros2_knowledge_graph::new_edge("world", node_to_add.node_name, edge_content, true);
+          auto edge_content = ros2_knowledge_graph::new_content<geometry_msgs::msg::PoseStamped>(pose_stamped_msg, false);
+          auto edge_world_obj = ros2_knowledge_graph::new_edge("world", node_to_add.node_name, edge_content, false);
 
           edge_world_obj.content.type = ros2_knowledge_graph_msgs::msg::Content::POSE;
           edge_world_obj.content.pose_value = pose_stamped_msg;
 
-          graph_->update_edge(edge_world_obj, true);
+          graph_->update_edge(edge_world_obj, false);
           std::cout << "node added"<< std::endl;
         }
       }
