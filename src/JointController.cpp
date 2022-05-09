@@ -126,7 +126,8 @@ void getAngleBetween(rclcpp_lifecycle::LifecycleNode * node, geometry_msgs::msg:
 
     RCLCPP_INFO(get_logger(), "before getting nodes");
 
-   
+    std::shared_ptr<ros2_knowledge_graph::GraphNode> graph_aux; //this is made to update the knowledge graph.
+    graph_aux = std::make_shared<ros2_knowledge_graph::GraphNode>(shared_from_this());
     std::map<std::string, ros2_knowledge_graph_msgs::msg::Edge> r_positions_edges;
     std::vector<std::string> r_names;
 
