@@ -23,7 +23,8 @@ using ros2_knowledge_graph::add_property;
 
 namespace focus_selector {
 
-  FocusSelector::FocusSelector() : rclcpp_lifecycle::LifecycleNode("FocusSelector") {}
+  FocusSelector::FocusSelector() : rclcpp_lifecycle::LifecycleNode("FocusSelector")
+  {}
 
   using CallbackReturnT = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;
 
@@ -39,6 +40,42 @@ namespace focus_selector {
   CallbackReturnT FocusSelector::on_activate(const rclcpp_lifecycle::State & state)
   {
     RCLCPP_INFO(get_logger(), "[%s] Activating from [%s] state...", get_name(), state.label().c_str());
+
+    graph_->update_node(new_node("world", "World"));
+
+
+    auto tmp_node = new_node("object_1", "Object");
+    //add_property(tmp_node, "ros_time", shared_from_this()->now().seconds());
+    //add_property(tmp_node, "available", true);
+    graph_->update_node(tmp_node);
+
+    tmp_node = new_node("object_2", "Object");
+    //add_property(tmp_node, "ros_time", shared_from_this()->now().seconds());
+    //add_property(tmp_node, "available", true);
+    graph_->update_node(tmp_node);
+    
+    tmp_node = new_node("object_3", "Object");
+    //add_property(tmp_node, "ros_time", shared_from_this()->now().seconds());
+    //add_property(tmp_node, "available", true);
+    graph_->update_node(tmp_node);
+
+    tmp_node = new_node("object_4", "Object");
+    //add_property(tmp_node, "ros_time", shared_from_this()->now().seconds());
+    //add_property(tmp_node, "available", true);
+    graph_->update_node(tmp_node);
+
+    tmp_node = new_node("robot_1", "Robot");
+    //add_property(tmp_node, "count_started", false);
+    graph_->update_node(tmp_node);
+    graph_->update_edge(new_edge<std::string>("robot_1", "object_1", "want_to_see"));
+    graph_->update_edge(new_edge<std::string>("robot_1", "object_2", "want_to_see"));
+    graph_->update_edge(new_edge<std::string>("robot_1", "object_3", "want_to_see"));
+
+    tmp_node = new_node("robot_2", "Robot");
+    //add_property(tmp_node, "count_started", false);
+    graph_->update_node(tmp_node);
+    graph_->update_edge(new_edge<std::string>("robot_2", "object_3", "want_to_see"));
+    graph_->update_edge(new_edge<std::string>("robot_2", "object_4", "want_to_see"));
     
     return CallbackReturnT::SUCCESS;
   }
@@ -92,9 +129,20 @@ namespace focus_selector {
     /* Getting all robot nodes. */
     const nodes_vector robots = get_nodes_by_class("Robot");
 
-    /* Collecting all objects that are not currently being watched and need to be. */
-    auto want_to_see_edges = graph_->get_edges_from_node_by_data("world", "want_to_see");
-    auto all_targets_nodes = get_target_nodes_from_edges(want_to_see_edges);
+    /* Collecting all objects that need to be watched. */
+    std::map<std::string, ros2_knowledge_graph_msgs::msg::Node> nodes_map;
+    for(auto robot : robots) {
+      auto want_to_see_edges = graph_->get_edges_from_node_by_data(robot.node_name, "want_to_see");
+      for(auto edge : want_to_see_edges) {
+        nodes_map[edge.target_node_id] = graph_->get_node(edge.target_node_id).value();
+      }
+    }
+
+    /* Extract target_nodes from nodes_map. */
+    std::vector<ros2_knowledge_graph_msgs::msg::Node> all_targets_nodes;
+    for(auto pair : nodes_map) {
+      all_targets_nodes.push_back(pair.second);
+    }
 
     /* Recruiting the robots that are idle after liberating the busy ones that have finished. */
     nodes_vector free_robots;
@@ -106,7 +154,7 @@ namespace focus_selector {
 
         free_robots.push_back(robot);
 
-      } else if(exist_edge("world", target_edge[0].target_node_id, "want_to_see")) {
+      } else if(nodes_map.count(target_edge[0].target_node_id) == 1) {
         /* It has a valid target(with the want_to_see edge). */
 
         auto watching_edge = graph_->get_edges_from_node_by_data(robot.node_name, "watching");
