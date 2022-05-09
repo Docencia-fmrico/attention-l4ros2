@@ -12,7 +12,7 @@ int main(int argc, char **argv)
   
   //rclcpp::spin(node->get_node_base_interface());
 
-  rclcpp::Rate rate(5);
+  rclcpp::Rate rate(50);
   while (rclcpp::ok()) {
     node->do_work();
 

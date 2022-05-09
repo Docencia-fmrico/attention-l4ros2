@@ -59,6 +59,9 @@ namespace perception {
 
   void Perception::do_work() 
   { 
+
+    std::shared_ptr<ros2_knowledge_graph::GraphNode> graph_aux; //this is made to update the knowledge graph.
+    graph_aux = std::make_shared<ros2_knowledge_graph::GraphNode>(shared_from_this());
     
     RCLCPP_INFO(get_logger(), "%d nodes", graph_->get_num_nodes());
     
