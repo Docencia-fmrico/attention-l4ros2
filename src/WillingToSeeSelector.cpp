@@ -121,11 +121,12 @@ void WillingToSeeSelector::addWantToSeeEdge(std::string name1, std::string name2
 
             if (dist < ATTENTION_RADIUS){
               addWantToSeeEdge(r_name, node.node_name);
-            }else if(temp_edges.size() == 1){
-              if(temp_edges.at(0).content.string_value == want_see_id){
-                graph_->remove_edge(temp_edges.at(0),true);
+            }else if(temp_edges.size() > 0){
+              for (auto & edge : temp_edges){
+                if(edge.content.string_value == want_see_id){
+                  graph_->remove_edge(edge, true);
+                }
               }
-              
             }
           }
 
