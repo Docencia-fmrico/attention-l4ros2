@@ -22,12 +22,9 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(rclcpp_lifecycle REQUIRED)
-<<<<<<< HEAD
 find_package(trajectory_msgs REQUIRED)
-find_package(ament_index_cpp REQUIRED)
 find_package(std_msgs REQUIRED)
 
-=======
 find_package(ament_index_cpp REQUIRED)
 find_package(gazebo_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
@@ -35,7 +32,6 @@ find_package(ros2_knowledge_graph REQUIRED)
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
->>>>>>> main
 
 set(CMAKE_CXX_STANDARD 17)
 
