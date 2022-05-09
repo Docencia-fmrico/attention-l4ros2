@@ -22,6 +22,9 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(rclcpp_lifecycle REQUIRED)
+find_package(trajectory_msgs REQUIRED)
+find_package(std_msgs REQUIRED)
+
 find_package(ament_index_cpp REQUIRED)
 find_package(gazebo_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
@@ -36,6 +39,9 @@ set(dependencies
     rclcpp
     rclcpp_action
     rclcpp_lifecycle
+    trajectory_msgs
+    tf2_geometry_msgs
+    std_msgs
     gazebo_msgs
     geometry_msgs
     ros2_knowledge_graph
@@ -47,8 +53,16 @@ install(DIRECTORY include/
   DESTINATION include/
 )
 
+
 add_library(lib_percep SHARED src/Perception.cpp ) # src/Perception.cpp )
 ament_target_dependencies(lib_percep ${dependencies})
+
+add_library(lib_joint SHARED src/JointController.cpp)
+ament_target_dependencies(lib_joint ${dependencies})
+
+add_executable(neck_controller_node src/neck_controller_node.cpp)
+ament_target_dependencies(neck_controller_node ${dependencies})
+target_link_libraries(neck_controller_node lib_joint)
 
 add_library(lib_willing SHARED src/WillingToSeeSelector.cpp ) # src/WillingToSeeSelector.cpp )
 ament_target_dependencies(lib_willing ${dependencies})
@@ -71,6 +85,7 @@ target_link_libraries(focus_selector_node lib_focus_selector)
 install(DIRECTORY launch worlds config DESTINATION share/${PROJECT_NAME})
 
 install(TARGETS
+  neck_controller_node
   perception_node
   willing_to_see_node
   focus_selector_node
