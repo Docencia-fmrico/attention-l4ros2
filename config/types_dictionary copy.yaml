@@ -1,0 +1,8 @@
+perception_node:
+  ros__parameters:
+
+    types: ["Patient", "Scrubs", "Visitor"]
+    
+    Patient: "Person"
+    Scrubs: "Person"
+    Visitor: "Person"
